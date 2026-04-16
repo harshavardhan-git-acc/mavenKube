@@ -1,27 +1,39 @@
 package com.demos;
 
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
-import java.io.OutputStream;
+// Base Class demonstrating Inheritance
+abstract class MathOperation {
+    protected String name;
+    public MathOperation(String name) { this.name = name; }
+    public abstract long execute(int n);
+}
+
+// Derived Class
+class FactorialOp extends MathOperation {
+    public FactorialOp() { super("Factorial"); }
+
+    @Override
+    public long execute(int n) {
+        if (n < 0) throw new IllegalArgumentException("Input must be non-negative");
+        if (n > 20) throw new IllegalArgumentException("Input too large (max 20)");
+        long res = 1;
+        for (int i = 1; i <= n; i++) res *= i;
+        return res;
+    }
+}
 
 public class App {
-    public static void main(String[] args) throws Exception {
-        // This creates a web server listening on port 8080
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+    public static void main(String[] args) throws InterruptedException {
+        // Polymorphism: Parent reference to Child object
+        MathOperation op = new FactorialOp();
         
-        server.createContext("/", (exchange) -> {
-            int input = 5;
-            int factorial = 120; // Your logic here
-            String response = "<h1>Factorial of " + input + " is: " + factorial + "</h1>" +
-                              "<p>Harshavardhan D. - App is responding via Kubernetes!</p>";
-            
-            exchange.sendResponseHeaders(200, response.length());
-            OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
-        });
-
-        System.out.println("Web Server started on port 8080...");
-        server.start();
+        System.out.println("Java CI/CD Application Started...");
+        System.out.println("Executing " + op.name + " for input 5...");
+        System.out.println("Result: " + op.execute(5));
+        
+        // Loop to keep the container active for Kubernetes verification
+        while (true) {
+            Thread.sleep(10000);
+            System.out.println("Harshavardhan D. - App is running and responding.");
+        }
     }
 }
